@@ -48,7 +48,6 @@ class Server
 
   def read_content(parsed_request)
     if parsed_request["Content-Length"]
-      # binding.pry
       @content_l = split_string(parsed_request["Content-Length"], 1).to_i
     else
       @content_l = nil

@@ -30,7 +30,6 @@ class Router
     when hash["Path"] == "Path: /game" && hash["Verb"] == "Verb: GET"
       get_game
     when hash["Path"] == "Path: /shutdown"
-      # @counter += 1
       print_shutdown
     else
       print_error
