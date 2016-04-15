@@ -1,29 +1,24 @@
-# require "./lib/server"
 
-class ParseRequest 
+class ParseRequest
   attr_reader :hash
 
-
-  def generate(request)
-    format_hash(make_hash(request))
-  end
-
   def make_hash(request)
-    @hash = {}
-    @hash["Verb"] = find_verb(request)
-    @hash["Path"] = find_path(request)
-    @hash["Protocol"] = find_protocol(request)
-    @hash["Host"] = find_host(request)
-    @hash["Port"] = find_port(request)
-    @hash["Origin"] = find_origin(request)
-    @hash["Accept"] = find_accept(request)
-    @hash
+    hash = {}
+    hash["Verb"] = find_verb(request)
+    hash["Path"] = find_path(request)
+    hash["Protocol"] = find_protocol(request)
+    hash["Host"] = find_host(request)
+    hash["Port"] = find_port(request)
+    hash["Origin"] = find_origin(request)
+    hash["Accept"] = find_accept(request)
+    hash["Content-Length"] = find_content(request) unless find_content(request).nil?
+    hash
   end
 
   def format_hash(hash)
-    str = ""
-    hash.each_value {|value| str << value + "\n" }
-    "<pre>" + str  + "</pre>"
+    hash_to_string = ""
+    hash.each_value {|value| hash_to_string << value + "\n" }
+    "<pre>" + hash_to_string + "</pre>"
   end
 
   def find_verb(request)
@@ -42,33 +37,43 @@ class ParseRequest
     host_string = request.find do |element|
       element.include?("Host")
     end
-    "Host: #{host_string.split(":")[1].strip}"
+    "Host: #{parse_string(host_string, 1)}"
   end
 
   def find_port(request)
     port_string = request.find do |element|
       element.include?("Host")
     end
-    "Port: #{port_string.split(":")[2]}"
+    "Port: #{parse_string(port_string, 2)}"
   end
 
   def find_origin(request)
     origin_string = request.find do |element|
       element.include?("Host")
     end
-    "Origin: #{origin_string.split(":")[1].strip}"
+    "Origin: #{parse_string(origin_string, 1)}"
   end
 
   def find_accept(request)
     accept_string = request.find do |element|
       element.include?("Accept:")
     end
-    "Accept: #{accept_string.split(":")[1].strip}"
+    "Accept: #{parse_string(accept_string, 1)}"
+  end
+
+  def parse_string(string, index)
+    string.split(":")[index].strip
+  end
+
+  def find_content(request)
+    content_string = request.find do |element|
+      element.include?("Content-Length:")
+    end
+    if content_string == nil
+      nil
+    else
+    "Content-Length: #{parse_string(content_string, 1)}"
+    end
   end
 
 end
-
-# ch = CreateHash.new
-# h = ["GET / HTTP/1.1", "Host: 127.0.0.1:9295", "Connection: keep-alive", "Cache-Control: max-age=0", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Upgrade-Insecure-Requests: 1", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36", "Accept-Encoding: gzip, deflate, sdch", "Accept-Language: en-US,en;q=0.8"]
-# # require 'pry';binding.pry
-# puts ch.generate(h)
