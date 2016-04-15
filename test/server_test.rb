@@ -1,3 +1,5 @@
+require "simplecov"
+SimepleCov.start 
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'faraday'

@@ -1,3 +1,5 @@
+require "simplecov"
+SimepleCov.start
 require "./lib/router"
 require "minitest/autorun"
 require "minitest/pride"
