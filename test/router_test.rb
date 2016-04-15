@@ -10,7 +10,7 @@ class RouterTest < Minitest::Test
     router = Router.new
     h = {"Path" => "Path: /hello"}
 
-    assert_equal "http/1.1 200 ok\r\n\r\nHello, World! 1", router.response_by_path(h)
+    assert_equal "Hello, World! 1", router.response_by_path(h)
   end
 
   def test_response_by_path_for_datetime
@@ -24,7 +24,7 @@ class RouterTest < Minitest::Test
     router = Router.new
     h = {"Path" => "Path: /shutdown"}
 
-    assert_equal "http/1.1 200 ok\r\n\r\nTotal Request:", router.response_by_path(h)
+    assert_equal "Total Request:", router.response_by_path(h)
   end
 
 #   def test_response_by_path_for_debugging
@@ -70,7 +70,7 @@ class RouterTest < Minitest::Test
 
     h = {"Path" => "Path: /newpath"}
 
-    assert_equal "http/1.1 200 ok\r\n\r\nNot valid path", router.response_by_path(h)
+    assert_equal "Not valid path", router.response_by_path(h)
   end
 
   def test_path_start_game

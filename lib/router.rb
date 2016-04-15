@@ -42,7 +42,7 @@ class Router
   end
 
   def print_hello
-    "http/1.1 200 ok\r\n\r\n" + "Hello, World! #{@hello_counter}"
+    "Hello, World! #{@hello_counter}"
   end
 
   def print_date
@@ -50,7 +50,7 @@ class Router
   end
 
   def print_shutdown
-    "http/1.1 200 ok\r\n\r\n" + "Total Request:"
+    "Total Request:"
   end
 
   def pull_in_dictionary
@@ -95,7 +95,7 @@ class Router
   end
 
   def print_error
-    "http/1.1 200 ok\r\n\r\n" + "Not valid path"
+    "Not valid path"
   end
 
 end
