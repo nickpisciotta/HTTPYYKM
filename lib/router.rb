@@ -3,32 +3,47 @@ require 'pry'
 
 class Router
 
+  attr_accessor :guess
+
+  def initialize
+    @guess = guess
+    @guess_counter = 0
+  end
+
   def response_by_path(hash)
-    @counter ||= 0
-    #binding.pry
-    #case statement
-    if hash["Path"] == "Path: /"
+
+    @hello_counter ||= 0
+    case
+    when hash["Path"] == "Path: /"
       print_debugging(hash)
-    elsif hash["Path"] == "Path: /hello"
-      @counter += 1
+    when hash["Path"] == "Path: /hello"
+      @hello_counter += 1
       print_hello
-    elsif hash["Path"] == "Path: /datetime"
+    when hash["Path"] == "Path: /datetime"
       print_date
-    elsif hash["Path"].include?("/word_search")
-      print_word_search
-    elsif hash["Path"] == "Path: /shutdown"
-      @counter += 1
+    when hash["Path"].include?("Path: /word_search")
+      print_word_search(hash)
+    when hash["Path"] == "Path: /start_game"
+      game_starts
+    when hash["Path"] == "Path: /game" && hash["Verb"] == "Verb: POST"
+      post_game
+    when hash["Path"] == "Path: /game" && hash["Verb"] == "Verb: GET"
+      get_game
+    when hash["Path"] == "Path: /shutdown"
+      # @counter += 1
       print_shutdown
+    else
+      print_error
     end
   end
 
   def print_debugging(hash)
-    ch = ParseRequest.new
-    ch.format_hash(hash)
+    parsed = ParseRequest.new
+    parsed.format_hash(hash)
   end
 
   def print_hello
-    "Hello, World! #{@counter}"
+    "http/1.1 200 ok\r\n\r\n" + "Hello, World! #{@hello_counter}"
   end
 
   def print_date
@@ -36,17 +51,52 @@ class Router
   end
 
   def print_shutdown
-    "Total Request: #{@counter}"
+    "http/1.1 200 ok\r\n\r\n" + "Total Request:"
   end
 
-  def print_word_search
-    #Need to take param word
-    #See if word exists within dictionary array 
+  def pull_in_dictionary
+    dict = File.readlines("/usr/share/dict/words")
+    dict
+  end
 
+  def print_word_search(hash)
+    word_path = hash["Path"]
+    searched_word = word_path.split("=")[1]
+    if pull_in_dictionary.include?("#{searched_word}\n")
+      "#{searched_word} is a known word."
+    else
+      "#{searched_word} is not a known word."
+    end
+  end
+
+  def get_game
+    guess_count = "Guesses: #{@guess_counter += 1}"
+    case
+    when @guess < @random_guess
+      guess_count + " " + "Your guess is too low"
+    when @guess == @random_guess
+      guess_count + " " + "You're correct!"
+    when @guess > @random_guess
+      guess_count + " " + "Your guess is too high"
+    else
+      "No guess was given"
+    end
+  end
+
+  def post_game
+    @guess
+    status = "HTTP/1.1 303 See Other\n"
+    location = "Location: http://127.0.0.1:9295/game\n\r"
+    status + location
+  end
+
+  def game_starts
+    @random_guess = rand(101)
+    "Good luck!"
+  end
+
+  def print_error
+    "http/1.1 200 ok\r\n\r\n" + "Not valid path"
   end
 
 end
-
-# router = Router.new
-# hash = {"Path" => "Path: /hello"}
-# router.response_by_path(hash)
